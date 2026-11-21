@@ -1,7 +1,4 @@
-"""
-card.py
-Phase 1: Card class and Deck (array/list of 52 cards, Fisher-Yates shuffle).
-"""
+
 import random
 
 SUITS = ("S", "H", "D", "C")
