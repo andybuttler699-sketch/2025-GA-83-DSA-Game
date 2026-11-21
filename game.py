@@ -1,12 +1,4 @@
-"""
-game.py
-Phase 2 + 3: game rules (no graphics here).
 
-Locations used everywhere:
-    ("W",)        waste pile
-    ("T", 1..7)   tableau column
-    ("F", suit)   foundation pile   (suit = "S", "H", "D", "C")
-"""
 import random
 import time
 
@@ -22,7 +14,7 @@ class Game:
         self.rng = random.Random(seed)
         self.new_game()
 
-    # ---- setup -----------------------------------------------------------
+
     def new_game(self):
         deck = Deck(self.rng)
         deck.shuffle()
@@ -30,26 +22,26 @@ class Game:
         self.foundation = {s: Stack() for s in SUITS}
         self.stock = Queue()
         self.waste = Stack()
-        self.where = {}                 # HashMap: card key -> pile label
+        self.where = {}               
         self.undo_stack = Stack()
         self.redo_stack = Stack()
         self.score = 0
         self.start_time = time.time()
         self.end_time = None
 
-        for i in range(1, 8):           # pile i gets i cards, last one face up
+        for i in range(1, 8):          
             for j in range(i):
                 c = deck.deal()
                 c.face_up = (j == i - 1)
                 self.tableau[i].push(c)
                 self.where[c.key] = f"T{i}"
-        while len(deck):                # remaining 24 cards -> stock queue
+        while len(deck):               
             c = deck.deal()
             c.face_up = False
             self.stock.enqueue(c)
             self.where[c.key] = "STOCK"
 
-    # ---- location helpers ------------------------------------------------
+
     @staticmethod
     def _label(loc):
         if loc[0] == "W":
@@ -86,7 +78,6 @@ class Game:
             return [self.foundation[loc[1]].peek()]
         return self.tableau[loc[1]].last_n(n)
 
-    # ---- validation ------------------------------------------------------
     @staticmethod
     def _is_sequence(cards):
         for a, b in zip(cards, cards[1:]):
@@ -96,7 +87,7 @@ class Game:
 
     def _validate(self, src, dst, n):
         """Returns (error_message_or_None, cards, normalised_dst)."""
-        # source
+
         if src[0] == "W":
             if self.waste.is_empty():
                 return "Waste pile is empty.", None, dst
@@ -120,7 +111,7 @@ class Game:
             if not self._is_sequence(cards):
                 return "Cards must be in alternating colors and descending rank.", None, dst
 
-        # destination
+  
         if dst[0] == "F":
             if src[0] == "F":
                 return "Cannot move from foundation to foundation.", None, dst
@@ -148,7 +139,7 @@ class Game:
                     return "Must be placed on opposite color, one rank higher.", None, dst
         return None, cards, dst
 
-    # ---- applying / reverting a move record -----------------------------
+
     def _apply(self, m):
         t = m["type"]
         if t == "DRAW":
@@ -158,7 +149,7 @@ class Game:
                 self.waste.push(c)
                 self.where[c.key] = "WASTE"
         elif t == "RECYCLE":
-            for c in self.waste.items():          # bottom -> top
+            for c in self.waste.items():         
                 c.face_up = False
                 self.stock.enqueue(c)
                 self.where[c.key] = "STOCK"
@@ -174,7 +165,7 @@ class Game:
             if src[0] == "F":
                 delta -= 15
             m["flip"] = False
-            if src[0] == "T":                     # flip the newly exposed card
+            if src[0] == "T":                 
                 pile = self.tableau[src[1]]
                 if pile.size and not pile.peek().face_up:
                     pile.peek().face_up = True
@@ -204,7 +195,6 @@ class Game:
             self._put(src, self._take(dst, m["n"]))
         self.score -= m["delta"]
 
-    # ---- public actions --------------------------------------------------
     def draw(self):
         if self.stock.is_empty() and self.waste.is_empty():
             return False, "No cards left to draw."
@@ -258,7 +248,7 @@ class Game:
             count += 1
         return count
 
-    # ---- win / time ------------------------------------------------------
+
     def is_won(self):
         return all(len(s) == 13 for s in self.foundation.values())
 
@@ -280,7 +270,6 @@ class Game:
     def final_score(self):
         return self.score + self.time_bonus()
 
-    # ---- hint ------------------------------------------------------------
     def find_hint(self):
         """Returns (src, dst, n, text). src == 'DRAW' -> draw from stock,
         src is None -> nothing to do."""
@@ -325,7 +314,7 @@ class Game:
             return "DRAW", None, 0, "draw a card from the stock"
         return None, None, 0, "no moves available - try Undo or New Game"
 
-    # ---- integrity check (used by tests) --------------------------------
+
     def verify(self):
         seen = {}
         for i, pile in self.tableau.items():
