@@ -1,8 +1,4 @@
-"""
-card_renderer.py
-Draws cards, card backs, empty slots and highlights on a Tk canvas.
-No game logic in this file - only drawing. Everything scales with T.S.
-"""
+
 import theme as T
 from card import SYMBOLS, rank_name
 
@@ -16,7 +12,7 @@ def rounded_rect(canvas, x1, y1, x2, y2, r=None, **kw):
     return canvas.create_polygon(pts, smooth=True, **kw)
 
 
-# pip positions (fraction of card width, fraction of card height)
+
 _L, _C, _R = 0.31, 0.5, 0.69
 _SIX = [(_L, .22), (_R, .22), (_L, .5), (_R, .5), (_L, .78), (_R, .78)]
 PIPS = {
@@ -47,7 +43,7 @@ def draw_card(canvas, card, x, y, tags=("card",), lift=False):
     sym = SYMBOLS[card.suit]
     r = rank_name(card.rank)
 
-    # corner indices (bottom-right one is rotated 180 degrees)
+
     canvas.create_text(x + 11 * s, y + 14 * s, text=r, fill=col, font=T.F_RANK, tags=tags)
     canvas.create_text(x + 11 * s, y + 30 * s, text=sym, fill=col, font=T.F_SMALL_SUIT, tags=tags)
     canvas.create_text(x + w - 11 * s, y + h - 14 * s, text=r, fill=col,
@@ -56,9 +52,9 @@ def draw_card(canvas, card, x, y, tags=("card",), lift=False):
                        font=T.F_SMALL_SUIT, angle=180, tags=tags)
 
     cx, cy = x + w / 2, y + h / 2
-    if card.rank == 1:                                   # Ace
+    if card.rank == 1:                                
         canvas.create_text(cx, cy, text=sym, fill=col, font=T.F_ACE, tags=tags)
-    elif card.rank >= 11:                                # J Q K
+    elif card.rank >= 11:                               
         rounded_rect(canvas, x + w * 0.27, y + h * 0.2, x + w * 0.73, y + h * 0.8, 6 * s,
                      fill=T.FACE_TINT[card.color], outline=col, width=1, tags=tags)
         canvas.create_text(cx, cy, text=r, fill=col, font=T.F_FACE_LETTER, tags=tags)
@@ -66,7 +62,7 @@ def draw_card(canvas, card, x, y, tags=("card",), lift=False):
                            font=T.F_FACE_SUIT, tags=tags)
         canvas.create_text(cx, y + h * 0.7, text=sym, fill=col,
                            font=T.F_FACE_SUIT, angle=180, tags=tags)
-    else:                                                # 2 .. 10
+    else:                                               
         for fx, fy in PIPS[card.rank]:
             canvas.create_text(x + w * fx, y + h * fy, text=sym, fill=col,
                                font=T.F_PIP, angle=180 if fy > 0.5 else 0, tags=tags)
