@@ -1,16 +1,4 @@
-"""
-gui.py
-Phase 4: graphical interface (Tkinter canvas).
 
-Features
-  * drag & drop cards (whole sequences from the tableau)
-  * double-click a card to fly it to the foundation
-  * click the stock to draw, animated snap-back on illegal moves
-  * Undo / Redo, Hint (golden glow), Auto-complete, Draw-1 / Draw-3
-  * live score, moves and timer, win screen with confetti
-Keyboard: Ctrl+Z undo, Ctrl+Y redo, H hint, A auto, N new game, D/Space draw,
-          F11 full screen, Esc leave full screen
-"""
 import random
 import tkinter as tk
 from tkinter import messagebox
@@ -32,11 +20,11 @@ class SolitaireApp:
 
         self.game = Game(draw_count=1)
 
-        self.items = []          # (card, x, y, loc, n_draggable) in draw order
-        self.zones = []          # (loc, drop_rect, last_card_rect)
+        self.items = []         
+        self.zones = []         
         self.stock_rect = (0, 0, 0, 0)
         self.drag = None
-        self.hidden = set()      # card keys not drawn in their pile (being moved)
+        self.hidden = set()     
         self.hint_keys = set()
         self.hint_dst = None
         self.hint_stock = False
@@ -75,7 +63,7 @@ class SolitaireApp:
         self.render()
         self._update_info()
         self._tick()
-        try:                                   # start maximised
+        try:                                 
             root.state("zoomed")
         except tk.TclError:
             try:
@@ -83,9 +71,7 @@ class SolitaireApp:
             except tk.TclError:
                 pass
 
-    # ------------------------------------------------------------------
-    # toolbar / info
-    # ------------------------------------------------------------------
+  
     def _build_toolbar(self):
         bar = tk.Frame(self.root, bg=T.UI_BG, pady=7)
         bar.pack(fill="x")
@@ -124,9 +110,6 @@ class SolitaireApp:
         self._update_info()
         self.root.after(500, self._tick)
 
-    # ------------------------------------------------------------------
-    # drawing
-    # ------------------------------------------------------------------
     def _draw_background(self):
         """Green felt with a soft radial glow."""
         c = self.canvas
@@ -170,7 +153,6 @@ class SolitaireApp:
         self.items = []
         self.zones = []
 
-        # ---- stock (queue) ----
         sx = self._col_x(0)
         self.stock_rect = (sx, T.TOP, sx + T.CARD_W, T.TOP + T.CARD_H)
         if len(g.stock):
@@ -180,7 +162,7 @@ class SolitaireApp:
         else:
             cr.draw_slot(c, sx, T.TOP, "\u21bb" if len(g.waste) else "")
 
-        # ---- waste (stack) ----
+       
         wx = self._col_x(1)
         cr.draw_slot(c, wx, T.TOP)
         all_w = g.waste.items()
@@ -191,7 +173,6 @@ class SolitaireApp:
             is_top = (k == len(shown) - 1 and card is all_w[-1])
             self.items.append((card, x, T.TOP, ("W",), 1 if is_top else 0))
 
-        # ---- foundations (stacks) ----
         for i, s in enumerate(SUITS):
             x = self._col_x(3 + i)
             cr.draw_slot(c, x, T.TOP, SYMBOLS[s])
@@ -204,7 +185,7 @@ class SolitaireApp:
                 cr.draw_card(c, card, x, T.TOP)
                 self.items.append((card, x, T.TOP, ("F", s), 1 if card is pile[-1] else 0))
 
-        # ---- tableau (linked lists) ----
+      
         for col in range(1, 8):
             x = self._col_x(col - 1)
             cr.draw_slot(c, x, T.TABLEAU_Y, "K")
@@ -226,7 +207,6 @@ class SolitaireApp:
             last = (x, last_y, x + T.CARD_W, last_y + T.CARD_H)
             self.zones.append((("T", col), full, last))
 
-        # ---- hint glow ----
         if self.hint_stock:
             cr.draw_highlight(c, *self.stock_rect)
         for card, x, y, loc, n in self.items:
@@ -237,9 +217,6 @@ class SolitaireApp:
                 if loc == self.hint_dst:
                     cr.draw_highlight(c, *last)
 
-    # ------------------------------------------------------------------
-    # window size / full screen
-    # ------------------------------------------------------------------
     def on_resize(self, e):
         if e.width < 100 or e.height < 100:
             return
@@ -258,9 +235,6 @@ class SolitaireApp:
         self.fullscreen = (not self.fullscreen) if state is None else state
         self.root.attributes("-fullscreen", self.fullscreen)
 
-    # ------------------------------------------------------------------
-    # mouse handling
-    # ------------------------------------------------------------------
     def _entry_at(self, x, y):
         for entry in reversed(self.items):
             _, cx, cy, _, _ = entry
@@ -317,7 +291,7 @@ class SolitaireApp:
         if not d:
             return
         self.drag = None
-        if not d["moved"]:                      # just a click
+        if not d["moved"]:                     
             self.canvas.delete("drag")
             self.hidden = set()
             self.render()
@@ -387,9 +361,7 @@ class SolitaireApp:
             self._after_action("")
         self._fly(cx, cy, tx, T.TOP, done)
 
-    # ------------------------------------------------------------------
-    # animation
-    # ------------------------------------------------------------------
+
     def _fly(self, x0, y0, tx, ty, done, steps=12):
         """Slide everything tagged 'drag' from (x0,y0) to (tx,ty), ease-out."""
         self.animating = True
@@ -407,9 +379,7 @@ class SolitaireApp:
                 done()
         step(1)
 
-    # ------------------------------------------------------------------
-    # actions (buttons / keys)
-    # ------------------------------------------------------------------
+  
     def _after_action(self, msg):
         self._update_info()
         self._set_status(msg)
@@ -515,9 +485,6 @@ class SolitaireApp:
         self._update_info()
         self._set_status("New game - good luck!")
 
-    # ------------------------------------------------------------------
-    # win screen
-    # ------------------------------------------------------------------
     def _on_win(self):
         self._set_status("Congratulations - you won!  Press N for a new game.")
         self._clear_hint()
