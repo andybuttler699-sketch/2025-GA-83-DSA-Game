@@ -39,7 +39,7 @@ class Deck:
         self.rng = rng or random.Random()
 
     def shuffle(self):
-        # Fisher-Yates shuffle, O(n)
+   
         for i in range(len(self.cards) - 1, 0, -1):
             j = self.rng.randint(0, i)
             self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
