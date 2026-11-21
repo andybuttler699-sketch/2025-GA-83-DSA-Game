@@ -1,10 +1,4 @@
-"""
-structures.py
-Basic data structures used by the game:
-  Stack        (LIFO)        -> foundation piles, waste pile, undo / redo
-  Queue        (FIFO)        -> stock pile
-  TableauPile  (linked list) -> the 7 tableau columns
-"""
+
 from collections import deque
 
 
