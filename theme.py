@@ -1,14 +1,8 @@
-"""
-theme.py
-Colors + sizes. Sizes are RECOMPUTED by set_layout() whenever the window is
-resized, so the whole game scales to any screen (including full screen).
-"""
 
-# ---- base design size (what the game looks like at scale 1.0) -----------
-BASE_W = 7 * 84 + 8 * 18      # 732
+BASE_W = 7 * 84 + 8 * 18   
 BASE_H = 620
 
-# ---- colors -------------------------------------------------------------
+
 BG_EDGE = "#06401f"
 BG_CENTER = "#16a055"
 UI_BG = "#0b2e1a"
@@ -34,11 +28,10 @@ SLOT_FILL = "#0e7a40"
 SLOT_EDGE = "#4fc083"
 SLOT_TEXT = "#4fc083"
 
-# UI fonts (toolbar / status bar) never change size
 F_UI = ("Segoe UI", -13, "bold")
 F_INFO = ("Segoe UI", -15, "bold")
 
-# ---- values filled in by set_layout() -----------------------------------
+
 S = 1.0
 X0 = 0.0
 CANVAS_W = BASE_W
@@ -66,7 +59,7 @@ def set_layout(w, h):
     w, h = max(w, 400), max(h, 300)
     S = min(w / BASE_W, h / BASE_H)
     CANVAS_W, CANVAS_H = w, h
-    X0 = (w - BASE_W * S) / 2            # centre the table horizontally
+    X0 = (w - BASE_W * S) / 2           
 
     CARD_W, CARD_H, GAP = 84 * S, 118 * S, 18 * S
     TOP = 16 * S
