@@ -1,6 +1,4 @@
-"""
-main.py  -  START HERE (set this as the Startup File in Visual Studio)
-"""
+
 import tkinter as tk
 
 from gui import SolitaireApp
